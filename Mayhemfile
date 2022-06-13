@@ -1,0 +1,4 @@
+project: mrpt
+target: ini2yaml
+cmds:
+  - cmd: /repo/build/bin/ini2yaml @@
