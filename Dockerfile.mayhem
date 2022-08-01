@@ -1,27 +1,16 @@
 FROM --platform=linux/amd64 ubuntu:18.04 as builder
 
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential pkg-config cmake libwxgtk3.0-dev \
-    libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev zlib1g-dev \
-    libsuitesparse-dev libjpeg-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxrandr-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxinerama-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxcursor-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxi-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y freeglut3-dev libassimp-dev libglfw3-dev \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential pkg-config cmake libwxgtk3.0-dev libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev zlib1g-dev libsuitesparse-dev libjpeg-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev freeglut3-dev libassimp-dev libglfw3-dev \
     libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
     libxrandr-dev libxxf86vm-dev
 
 COPY . /repo
 WORKDIR /repo/build
-RUN cmake ..
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=/install
 RUN make -j8
-
-RUN mkdir -p /deps
-RUN ldd /repo/build/bin/ini2yaml | tr -s '[:blank:]' '\n' | grep '^/' | xargs -I % sh -c 'cp % /deps;'
+RUN make install
 
 FROM ubuntu:18.04 as package
-
-COPY --from=builder /deps /deps
-COPY --from=builder /repo/build/bin/ini2yaml /repo/build/bin/ini2yaml
-ENV LD_LIBRARY_PATH=/deps
+COPY --from=builder /install /install
+ENV LD_LIBRARY_PATH=/install/lib
