@@ -617,6 +617,10 @@ MRPT_TEST(yaml, fromYAML)
 		EXPECT_EQ(e.comment(CommentPosition::RIGHT), "comment for a");
 		EXPECT_THROW(e.comment(CommentPosition::TOP), std::exception);
 
+		EXPECT_EQ(e.node().marks.line, 13);
+		EXPECT_EQ(e.node().marks.column, 7);
+		EXPECT_EQ(e.node().marks.input_pos, 147);
+
 #if 0
 		p.printDebugStructure(std::cout);
 		p.printAsYAML();
@@ -932,6 +936,35 @@ MRPT_TEST(yaml, fromJSON)
 		EXPECT_EQ(p["data"](0)["id"].as<std::string>(), "1");
 		EXPECT_EQ(p["included"](0)["id"].as<int>(), 42);
 	}
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, booleanVersions)
+{
+	mrpt::containers::yaml p;
+	p["b01"] = "0";
+	p["b02"] = "False";
+	p["b03"] = "false";
+	p["b04"] = "FALSE";
+	p["b05"] = "No";
+
+	p["b11"] = "1";
+	p["b12"] = "True";
+	p["b13"] = "true";
+	p["b14"] = "TRUE";
+	p["b15"] = "Yes";
+
+	EXPECT_EQ(p["b01"].as<bool>(), false);
+	EXPECT_EQ(p["b02"].as<bool>(), false);
+	EXPECT_EQ(p["b03"].as<bool>(), false);
+	EXPECT_EQ(p["b04"].as<bool>(), false);
+	EXPECT_EQ(p["b05"].as<bool>(), false);
+
+	EXPECT_EQ(p["b11"].as<bool>(), true);
+	EXPECT_EQ(p["b12"].as<bool>(), true);
+	EXPECT_EQ(p["b13"].as<bool>(), true);
+	EXPECT_EQ(p["b14"].as<bool>(), true);
+	EXPECT_EQ(p["b15"].as<bool>(), true);
 }
 MRPT_TEST_END()
 
