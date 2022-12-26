@@ -13,6 +13,10 @@ RUN make install
 RUN clang++-10 /repo/mayhem/fuzz_trim.cpp -fsanitize=fuzzer,address -I /install/include/mrpt/system/include/mrpt/system/ /install/lib/libmrpt*.so -std=c++17 -o /fuzz
 
 FROM ubuntu:18.04 as package
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libopencv-dev libglfw3-dev libwxgtk3.0-dev libwxgtk3.0-gtk3-dev qtbase5-dev freeglut3-dev libassimp-dev libglu1-mesa-dev libsuitesparse-dev
+
 COPY --from=builder /install /install
 COPY --from=builder /fuzz /fuzz_trim
 ENV LD_LIBRARY_PATH=/install/lib
