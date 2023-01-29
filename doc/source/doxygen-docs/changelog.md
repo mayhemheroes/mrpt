@@ -1,9 +1,24 @@
 \page changelog Change Log
 
-# Version 2.5.8: UNRELEASED
+# Version 2.6.1: UNRELEASED
+- BUG FIXES:
+    - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
+
+# Version 2.6.0: Released January 12th, 2023
+- Changes in libraries:
+    - \ref mrpt_math_grp
+      - Remove unused header: `<mrpt/math/bits_math.h>`
+    - \ref mrpt_opengl_grp
+      - New method mrpt::opengl::CAssimpModel::texturedObjects()
+- BUG FIXES:
+    - Fix wrong evaluation of the pivot point for the angular threshold parameters in ICP (Closes [#1264](https://github.com/MRPT/mrpt/issues/1264))
+
+# Version 2.5.8: Released January 7th, 2023
 - Changes in libraries:
     - \ref mrpt_core_grp
       - Move the `_deg` literal to a new namespace mrpt::literals to allow finer-grained `using namespace mrpt::literals;` instead of `using namespace mrpt;`. This change is backwards compatible, no user code change required, but recommended.
+    - \ref mrpt_expr_grp
+      - New mrpt::expr::CRuntimeCompiledExpression::register_function() to allow user-defined functions in runtime-compiled formulas.
 
 # Version 2.5.7: Released November 25th, 2022
 - Changes in applications:
