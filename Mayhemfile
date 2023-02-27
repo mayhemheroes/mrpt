@@ -1,4 +1,0 @@
-project: mrpt
-target: ini2yaml
-cmds:
-  - cmd: /install/bin/ini2yaml @@
