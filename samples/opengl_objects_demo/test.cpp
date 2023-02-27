@@ -37,7 +37,7 @@ void TestOpenGLObjects()
 
 	CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	auto& rng = mrpt::random::getRandomGenerator();
 
@@ -249,8 +249,22 @@ void TestOpenGLObjects()
 			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
+			obj->materialShininess(0.99f);
+			obj->setName("Ellipsoid shininess=0.99");
+			obj->enableShowName();
 			obj->enableDrawSolid3D(true);
 			obj->setLocation(off_x, -6, 0);
+			theScene->insert(obj);
+		}
+		{
+			auto obj = opengl::CEllipsoid3D::Create();
+			obj->setCovMatrix(cov3d);
+			obj->setQuantiles(2.0);
+			obj->materialShininess(0.01f);
+			obj->setName("Ellipsoid shininess=0.01");
+			obj->enableShowName();
+			obj->enableDrawSolid3D(true);
+			obj->setLocation(off_x, -12, 0);
 			theScene->insert(obj);
 		}
 
@@ -436,6 +450,7 @@ void TestOpenGLObjects()
 		opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
 		opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
 		opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
+		opengl::CMesh::Ptr obj5 = opengl::CMesh::Create();
 
 		obj1->setXBounds(-1, 1);
 		obj1->setYBounds(-1, 1);
@@ -485,6 +500,7 @@ void TestOpenGLObjects()
 		obj3->enableWireFrame(true);
 		obj3->setLocation(off_x, 0, 0);
 		obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
+		// obj3->enableTextureMipMap(false);
 		theScene->insert(obj3);
 
 		// obj 4:
@@ -493,7 +509,17 @@ void TestOpenGLObjects()
 			obj4->assignImageAndZ(im, Z);
 			obj4->setLocation(off_x, 3, 0);
 			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
+			// obj4->enableTextureMipMap(false);
 			theScene->insert(obj4);
+		}
+		// obj 5:
+		if (im.getWidth() > 1)
+		{
+			obj5->assignImageAndZ(im, Z);
+			obj5->setMeshTextureExtension(0.25, 0.5);
+			obj5->setLocation(off_x + 3, 3, 0);
+			// obj5->enableTextureMipMap(false);
+			theScene->insert(obj5);
 		}
 
 		mrpt::math::CMatrixDynamic<float> Z2(H, W);

@@ -75,7 +75,7 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 
 	const auto [lrpUV, lrpDepth] = projectToScreenCoordsAndDepth(lrp, objState);
 
-	if (skipCullChecks)
+	if (skipCullChecks || !obj->cullElegible())
 	{
 		// direct return:
 		return {lrpDepth, true, true};
@@ -375,6 +375,7 @@ void mrpt::opengl::processRenderQueue(
 		for (auto it = rqMap.rbegin(); it != rqMap.rend(); ++it)
 		{
 			const RenderQueueElement& rqe = it->second;
+			ASSERT_(rqe.object != nullptr);
 
 			// Load matrices in shader:
 			const auto IS_TRANSPOSED = GL_TRUE;
@@ -393,6 +394,12 @@ void mrpt::opengl::processRenderQueue(
 					shader.uniformId("v_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.v_matrix.data());
 
+			if (shader.hasUniform("v_matrix_no_translation"))
+				glUniformMatrix4fv(
+					shader.uniformId("v_matrix_no_translation"), 1,
+					IS_TRANSPOSED,
+					rqe.renderState.v_matrix_no_translation.data());
+
 			if (shader.hasUniform("mv_matrix"))
 				glUniformMatrix4fv(
 					shader.uniformId("mv_matrix"), 1, IS_TRANSPOSED,
@@ -403,10 +410,19 @@ void mrpt::opengl::processRenderQueue(
 					shader.uniformId("pmv_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.pmv_matrix.data());
 
+			if (shader.hasUniform("cam_position"))
+				glUniform3f(
+					shader.uniformId("cam_position"), rqe.renderState.eye.x,
+					rqe.renderState.eye.y, rqe.renderState.eye.z);
+
+			if (shader.hasUniform("materialSpecular"))
+				glUniform1f(
+					shader.uniformId("materialSpecular"),
+					rqe.object->materialShininess());
+
 			rc.state = &rqe.renderState;
 
 			// Render object:
-			ASSERT_(rqe.object != nullptr);
 			rqe.object->render(rc);
 		}
 	}

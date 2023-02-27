@@ -66,18 +66,17 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		rc.activeLights = rc.lights;
 
 		const Program& s = *rc.shader;
+		const auto& dif = rc.lights->diffuse;
+		const auto& amb = rc.lights->ambient;
+		const auto& spc = rc.lights->specular;
+		const auto& dir = rc.lights->direction;
 
-		glUniform4f(
-			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
-			rc.lights->diffuse.G, rc.lights->diffuse.B, rc.lights->diffuse.A);
-		glUniform4f(
-			s.uniformId("light_ambient"), rc.lights->ambient.R,
-			rc.lights->ambient.G, rc.lights->ambient.B, rc.lights->ambient.A);
-		// glUniform4fv(s.uniformId("light_specular"), 1,
-		// &rc.lights->specular.R);
-		glUniform3f(
-			s.uniformId("light_direction"), rc.lights->direction.x,
-			rc.lights->direction.y, rc.lights->direction.z);
+		glUniform4f(s.uniformId("light_diffuse"), dif.R, dif.G, dif.B, dif.A);
+		glUniform4f(s.uniformId("light_ambient"), amb.R, amb.G, amb.B, amb.A);
+		glUniform3f(s.uniformId("light_direction"), dir.x, dir.y, dir.z);
+		if (rc.shader->hasUniform("light_specular"))
+			glUniform4f(
+				s.uniformId("light_specular"), spc.R, spc.G, spc.B, spc.A);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
